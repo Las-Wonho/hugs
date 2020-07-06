@@ -29,10 +29,5 @@ def youtube_wav_download(url, file_name, download_path):
         youtube_wav_download(url, file_name, download_path)
 
 
-
-def to_melspectrogram():
-    pass
-
-
 if __name__ == "__main__":
-    youtube_wav_download('https://www.youtube.com/watch?v=OzMpkAwgH9k', 'test1', './download')
+    youtube_wav_download('https://www.youtube.com/watch?v=cOz7NUaGJ0Y', 'test1', './download')
