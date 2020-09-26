@@ -16,64 +16,137 @@ from flask import send_file, send_from_directory, safe_join, abort
 from flask import flash
 from flask import stream_with_context
 
+class Database:
+    def __init__(self, user, port):
+        self._user = user
+        self._port = port
 
+    def get_local_db(self):
+        db = pymysql.connect(host='localhost',
+                        port=self._port,
+                        user=self._user,
+                        passwd='cd101368@',
+                        db='hug',
+                        charset='utf8')
+        cursor = db.cursor()
+        return db, cursor
+
+    def get_db(self):
+        db = pymysql.connect(host='34.64.149.185',
+                        port=self._port,
+                        user=self._user,
+                        passwd='',
+                        db='hugs',
+                        charset='utf8')
+        cursor = db.cursor()
+        return db, cursor
+    
 
 #configuration image
-app.config["IMAGE_UPLOADS"] = "C:/hugs/app/static/img/uploads"
+app.config["IMAGE_UPLOADS"] = "/static/img/uploads"
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"]
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 app.config["MAX_IMAGE_FILESIZE"] = 0.5 * 1024 * 1024
 
 #configuration audio
-app.config["AUDIO_UPLOADS"] = "C:/hugs/app/static/audio/uploads"
+app.config["AUDIO_UPLOADS"] = "/static/audio/uploads"
 app.config["ALLOWED_AUDIO_EXTENSIONS"] = ["MP3", "WAV", "WMA", "AIFF", "ALAC"]
 
 #configuration login
 app.config["SECRET_KEY"] = 'n1otDX895NuHB51rv6paUA'
     
-#database
-def get_db():
-    db = pymysql.connect(host='localhost',
-                        port=3306,
-                        user='root',
-                        passwd='cd101368@',
-                        db='HUG',
-                        charset='utf8')
-    cursor = db.cursor()
-    return db, cursor
+#container
+user_session_container = dict()
 
-# mocking object
-users = {
-    "Dawon": {
-        "username": "Dawon",
-        "email": "cd941568@gmail.com",
-        "password": "cd1234",
-        "bio": "CTO, Google LLC",
-        "twitter_handle": "@dawon"
-    }
-}
-
+#database instance
+user_database = Database('root', 3306)
 
 @app.route("/")
 def index():
     return render_template("public/index.html", session=session.get("USERNAME"))
 
-def allowed_image(filename):
-    if not "." in filename:
-        return False
+@app.route("/lyrics")
+def lyrics():
+    return render_template("public/lyrics.html", session=session.get("USERNAME"))
 
-    ext = filename.rsplit(".", 1)[1]
-    if ext.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"]:
-        return True
+@app.route("/makeMusic")
+def makeMusic():
+    return render_template("public/makeMusic.html", session=session.get("USERNAME"))
+
+@app.route("/making")
+def making():
+    return render_template("public/making.html", session=session.get("USERNAME"))
+
+@app.route("/musicList")
+def musicList():
+    sql = """select * from musiclist;"""
+    result = sql_runner(sql)
+    print(result)
+    end = len(result)
+    return render_template("public/musicList.html", session=session.get("USERNAME"), music=result, end=end)
+
+@app.route("/musicListHigh")
+def musicListHigh():
+    return render_template("public/musicListHigh.html", session=session.get("USERNAME"))
+
+@app.route("/musicListLow")
+def musicListLow():
+    return render_template("public/musicListLow.html", session=session.get("USERNAME"))
+
+@app.route("/myMusicList")
+def myMusicList():
+    if not session.get("USERNAME") is None:
+        return render_template("public/myMusicList.html", session=session.get("USERNAME"))
     else:
-        return False
+        flash("로그인이 필요합니다.")
+        return redirect(request.url.replace('myMusicList','login'))
 
-def allowed_image_filesize(filesize):
-    if int(filesize) <= app.config["MAX_IMAGE_FILESIZE"]:
-        return True
+@app.route("/playList")
+def playList():
+    if not session.get("USERNAME") is None:
+        sql = """select * from playlist;"""
+        result = sql_runner(sql)
+        end = len(result)
+        return render_template("public/playList.html", session=session.get("USERNAME"), playlist=result, end=end)
     else:
-        return False
+        flash("로그인이 필요합니다.")
+        return redirect(request.url.replace('playList','login'))
 
+@app.route("/playList/<list_name>")
+def playList_detail(list_name):
+    if not session.get("USERNAME") is None:
+        sql = f"select * from playlist where p_name='{list_name}';"
+        playlist_name = sql_runner(sql)[0][1]
+
+        sql = f"select * from playlist_music where pm_id = (select p_id from playlist where p_name='{playlist_name}');"
+        final_result = sql_runner(sql)
+        end = len(final_result)
+        return render_template("public/playListMusic.html", session=session.get("USERNAME"), name=playlist_name ,playlist=final_result, end=end)
+    else:
+        flash("로그인이 필요합니다.")
+        return redirect(request.url.replace('playList','login'))
+
+def sql_runner(sql):
+    db, cursor = user_database.get_db()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result
+
+@app.route("/playListMusic")
+def playListMusic():   
+    return render_template("public/playListMusic.html", session=session.get("USERNAME"))
+
+@app.route("/select")
+def select():
+    return render_template("public/select.html", session=session.get("USERNAME"))
+
+@app.route("/signup")
+def signup():
+    return render_template("public/signup.html", session=session.get("USERNAME"))
+
+@app.route("/terms")
+def terms():
+    return render_template("public/Hugs.html", session=session.get("USERNAME"))
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_image():
@@ -101,45 +174,37 @@ def upload_image():
 
     return render_template("public/upload.html", session=session.get("USERNAME"))
 
-
 @app.route("/upload-audio", methods=["GET", "POST"])
 def upload_audio():
     return render_template("public/upload.html")
-
 
 @app.route("/streaming")
 def streaming_main_page():
     return render_template("public/stream.html", session=session.get("USERNAME"))
     
-
-@app.route("/streaming/<song_name>")
+@app.route("/musicList/<song_name>")
 def streamwav(song_name):
     def generate():
-        with open(f"app/static/audio/uploads/{song_name}.wav", "rb") as song:
+        with open(f"app/static/audio/uploads/{song_name}.mp3", "rb") as song:
             data = song.read(1024)
             while data:
                 yield data
                 data = song.read(1024)
     return Response(stream_with_context(generate()), mimetype="audio/x-wav")
 
-
 @app.route("/about")
 def about():
-    return render_template('public/about.html')
-
+    return render_template('public/about.html', session=session.get("USERNAME"))
 
 @app.route("/all")
 def all():
-    db, cursor = get_db()
     sql = """select * from accounts;"""
-    cursor.execute(sql)
-    result = cursor.fetchall()
+    result = sql_runner(sql)
     return "all members : " + str(result)
     
-
 @app.route("/sign-up", methods=["GET", "POST"])
 def sign_up():
-    db, cursor = get_db()
+    db, cursor = user_database.get_db()
 
     if request.method == "POST":
         req = request.form
@@ -158,13 +223,13 @@ def sign_up():
 
         # 1. check a empty field 2.checking mismatched case of password confirmation
         if missing:
-            flash(f"다음이 입력되지 않았습니다 : {', '.join(missing)}", "warning")
+            flash(f"다음이 입력되지 않았습니다 : {', '.join(missing)}")
             return redirect(request.url)
         elif password != conf_password:
-            flash("패스워드가 일치하지 않습니다.", "warning")
+            flash("패스워드가 일치하지 않습니다.")
             return redirect(request.url)
         elif not len(password) >= 6:
-            flash("비밀번호는 최소 6자 이상이여야 합니다.", "warning")
+            flash("비밀번호는 최소 6자 이상이여야 합니다.")
             return redirect(request.url)
         
         # test all of validation test of form
@@ -175,15 +240,15 @@ def sign_up():
         db.commit()
         db.close()
         
-        flash("Account created!", "success")
+        flash("Account created!")
         return redirect(request.url.replace('sign-up','login'))
 
-    return render_template("public/sign_up.html", session=session.get("USERNAME"))
-
+    return render_template("public/signup.html", session=session.get("USERNAME"))
 
 @app.route("/login", methods=["GET","POST"])
 def login():
-    db, cursor = get_db()
+    db, cursor = user_database.get_db()
+    print("session: " + str(session.get("USERNAME")))
     if not session.get("USERNAME") is None:
         return redirect(request.url.replace('login','profile'))
     else:
@@ -196,77 +261,56 @@ def login():
             """ % (email) 
             cursor.execute(sql)
             result = cursor.fetchall()
-            print(result)
+            print("username: " + str(result[0][0]))
 
             if result:
                 if str(result[0][2]) == str(password):
+                    print('로그인 성공')
                     container(result[0])
-                    print("[0][0] : ", result[0][0])
                     session["USERNAME"] = str(result[0][0])
                     db.close()
-                    return redirect(url_for('profile'))
+                    print("container: "+str(user_session_container[session["USERNAME"]]))
+                    return render_template("public/index.html", user=str(user_session_container[session["USERNAME"]]), status='Logout', session=session.get("USERNAME"))
                 else:
-                    flash("잘못된 비밀번호입니다.", "warning")
+                    flash("잘못된 비밀번호입니다.")
                     return redirect(request.url)
             else:
-                flash("존재하지 않는 사용자명입니다.", "warning")
+                flash("존재하지 않는 사용자입니다.")
                 return redirect(request.url)
 
     return render_template("public/login.html", session=session.get("USERNAME"))
-
-user_container = dict()
-def container(user):
-    user_container[user[0]] = user
-
-@app.route("/profile")
-def profile():
-    if not session.get("USERNAME") is None:
-        username = session.get("USERNAME")
-        return render_template("public/profile.html", user=user_container[username], status='Logout')
-    else:
-        flash("로그인이 필요합니다", "warning")
-        return redirect(url_for("login"))
-
 
 @app.route("/logout")
 def logout():
     session.pop("USERNAME", None)
     return redirect(url_for("index"))
 
-
-@app.route("/json", methods=["POST"])
-def json_example():
-    if request.is_json:
-        req = request.get_json()
-        response_body = {
-            "message": "JSON received!",
-            "sender": req.get("name")
-        }
-        res = make_response(jsonify(response_body), 200)
-        return res
+@app.route("/profile")
+def profile():
+    if not session.get("USERNAME") is None:
+        print('checkpoint A')
+        return render_template("public/profile.html", user=str(session.get("USERNAME")), status='Logout')
     else:
-        return make_response(jsonify({"message": "Request body must be JSON"}), 400)
+        print('need login')
+        flash("로그인이 필요합니다", "warning")
+        print('checkpoint B')
+        return redirect(url_for("login"))
 
+def container(user):
+    user_session_container[user[0]] = user
 
-@app.route("/query")
-def query():
-    if request.args:
-        args = request.args
-        serialized = ", ".join(f"{k}: {v}" for k, v in args.items())
-        return f"(Query) {serialized}", 200
+def allowed_image(filename):
+    if not "." in filename:
+        return False
+
+    ext = filename.rsplit(".", 1)[1]
+    if ext.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"]:
+        return True
     else:
-        return "No query string received", 200 
+        return False
 
-
-@app.route("/guestbook")
-def guestbook():
-    return render_template("public/guestbook.html")
-
-
-@app.route("/guestbook/create-entry", methods=["POST"])
-def create_entry():
-    req = request.get_json()
-    print(req)
-    res = make_response(jsonify(req), 200)
-    return res
-
+def allowed_image_filesize(filesize):
+    if int(filesize) <= app.config["MAX_IMAGE_FILESIZE"]:
+        return True
+    else:
+        return False

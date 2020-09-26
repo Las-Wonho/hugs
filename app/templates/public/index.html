@@ -1,52 +1,95 @@
-{% extends "public/templates/public_template.html" %}
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
 
-{% block title %}Home{% endblock %}
+<head>
+	<title>Elements - Editorial by HTML5 UP</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="static/css/main.css" />
+	<link rel="stylesheet" href="static/css/index_mam.css" />
 
+</head>
 
-{% block loglink %}
-{% if session == None %}
-  <button type="button" class="btn btn-dark" onclick="location.href='/login'">Login</button>
-{% else %}
-  <button type="button" class="btn btn-dark" onclick="location.href='/logout'">Logout</button>
-{% endif %}
-{% endblock %}
+<body class="is-preload">
 
+	<!-- Wrapper -->
+	<div id="wrapper">
 
-{% block main %}
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+				<!-- Header -->
+				<header id="header">
+				</header>
+				<!-- Content -->
+				<section>
+					<!-- Content -->
+					<div class="content">
+						<header>
+							<div class="appTitle">
+								<span>Make Your Own</span><br>
+								<span class="appTitleSub">세상 어디에도 없던, 당신만을 위한</span>
+							</div>
+						</header>
+						<div>
+							<button type="button" name="button" class="fit bestMusicBtn" onclick="location.href='/musicList'">
+								<span class="btnTitle">Best music</span><br>
+								<span class="btnSubTitle">인기가 좋은 음악들을 들어보세요.</span>
+							</button>
+						</div>
+						<div>
+							<button type="button" name="button" class="fit makeMusicBtn" onclick="location.href='/makeMusic'">
+								<span class="btnTitle">Make a music</span><br>
+								<span class="btnSubTitle">당신의 취향에 맞게 AI가 음악을 만들어 드립니다.</span>
+							</button>
+						</div>
+					</div>
+				</section>
 
-<div class="container">
-  <div class="row">
-    <div class="col">
-      {% if session == None %}
-        <h1>Hugs,</h1>
-        <br><br>
-        <h2>우리는 음악 그 이상을 제공합니다.</h2>
-        <br><br>
-        <h2>We provide more than just music.</h2>
-        <br><br>
-        <h2>私たちは音楽以上の感動を提供します.</h2>
-        <br><br>
-        <h2>我们提供音乐以外地感动</h2>
-        <br><br>
-        <h2>Nous donnons plus d'émotions à la musique.</h2>
-        <br><br>
-        <h2>Мы обеспечиваем не только музыку, но и эмоции.</h2>
-        <br><br>
-        <h2>Родился в семье шахтёра.</h2>
-        <br><br>
-        <h2>บิลลี่เป็นรูปปั้นทองแดงในเวลานั้น</h2>
-        <br><br>
-        <h2>010101110110010100100000011100000111001001101111
-        011101100110100101100100011001010010000001101101
-        01101111011100100110010100100000011101000110100001
-        10000101101110001000000110101001110101011100110111
-        010000100000011011010111010101110011011010010110001100101110</h2>
-      {% else %}
-        <h1>Hello, {{session}}</h1>
-      {% endif %}
-    </div>
-  </div>
-</div>
+			</div>
+		</div>
 
-{% endblock %}
+		<!-- Sidebar -->
+		<div id="sidebar">
+			<div class="inner">
+				<!-- Menu -->
+				<nav id="menu">
+					<header class="major">
+						<h2>Menu</h2>
+					</header>
+					<ul>
+						<li>
+							<a href="/">홈</a>
+						</li>
+						<li><a href="/makeMusic">음악 생성</a></li>
+						<li><a href="/musicList">뮤직 리스트</a></li>
+						<li>
+							<span class="opener">내 정보</span>
+							<ul>
+								<li><a href="/myMusicList">내 음악</a></li>
+								<li><a href="/playList">플레이리스트</a></li>
+							</ul>
+						</li>
+						<li><a href="/login">로그인</a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
 
+	</div>
+
+	<!-- Scripts -->
+	<script src="static/js/jquery.min.js"></script>
+	<script src="static/js/browser.min.js"></script>
+	<script src="static/js/breakpoints.min.js"></script>
+	<script src="static/js/util.js"></script>
+	<script src="static/js/main.js"></script>
+
+</body>
+
+</html>

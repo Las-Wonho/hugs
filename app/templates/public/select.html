@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+	<title>Elements - Editorial by HTML5 UP</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="static/css/main.css" />
+	<link rel="stylesheet" href="static/css/select.css" />
+</head>
+
+<body class="is-preload">
+
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+				<img src="static/images/prevBtn.svg" alt="" class="prevBtn" onclick="location.href='/makeMusic'">
+				<!-- Content -->
+				<section>
+					<!-- Content -->
+					<div class="content">
+						<header>
+							<div class="subTitle">Make</div>
+						</header>
+						<div class="gtr-uniform">
+							<div class="musicNameTitle">곡 명</div>
+							<div class="col-12">
+								<input type="text" name="musicName" id="musicName" value="" placeholder="곡 명">
+							</div>
+						</div>
+
+						<ul class="nav" id="pills-tab" role="tablist">
+							<li class="nav-item" role="presentation" style="margin-right: 0.8em;">
+								<a class="nav-link active lineTab" id="genre-tab" data-toggle="pill" href="#genre" role="tab" aria-controls="genre" aria-selected="true">장르</a>
+							</li>
+							<li class="nav-item" role="presentation">
+								<a class="nav-link lineTab" id="runtime-tab" data-toggle="pill" href="#runtime" role="tab" aria-controls="runtime" aria-selected="false">노래길이</a>
+							</li>
+						</ul>
+
+						<div class="tab-content" id="pills-tabContent">
+							<div class="tab-pane fade show active tabItem" id="genre" role="tabpanel" aria-labelledby="genre-tab">
+								<div class="row btn-group-toggle" data-toggle="buttons">
+									<div class="col-2 col-6-xsmall">
+										<div class=" btn genreSelect">
+											<input type="radio" name="Ggenre" id="genre1">발라드
+										</div>
+									</div>
+									<div class="col-2 col-6-xsmall">
+										<div class=" btn genreSelect">
+											<input type="radio" name="Ggenre" id="genre1">댄스
+										</div>
+									</div>
+									<div class="col-2 col-6-xsmall">
+										<div class=" btn genreSelect">
+											<input type="radio" name="Ggenre" id="genre1">힙합
+										</div>
+									</div>
+									<div class="col-2 col-6-xsmall">
+										<div class=" btn genreSelect">
+											<input type="radio" name="Ggenre" id="genre1">R&B/SOUL
+										</div>
+									</div>
+									<div class="col-2 col-6-xsmall">
+										<div class=" btn genreSelect">
+											<input type="radio" name="Ggenre" id="genre1">인디
+										</div>
+									</div>
+									<div class="col-2 col-6-xsmall">
+										<div class=" btn genreSelect">
+											<input type="radio" name="Ggenre" id="genre1">포크/블루스
+										</div>
+									</div>
+									<div class="col-2 col-6-xsmall">
+										<div class=" btn genreSelect">
+											<input type="radio" name="Ggenre" id="genre1">록/메탈
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="tab-pane fade runtimeDiv" id="runtime" role="tabpanel" aria-labelledby="runtime-tab">
+								<div class="runtime">
+									<input type="number" name="" value="" placeholder="00" class="runtimeTb" maxlength="2" oninput="maxLengthCheck(this)">
+									<span>:</span>
+									<input type="number" name="" value="" placeholder="00" class="runtimeTb" maxlength="2" oninput="maxLengthCheck(this)">
+								</div>
+							</div>
+						</div>
+						<input type="button" name="" value="노래 생성" class="hugsBtn fit makeMusicBtn" onclick="location.href='/musicList'">
+					</div>
+				</section>
+
+			</div>
+		</div>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="static/js/jquery.min.js"></script>
+	<script src="static/js/browser.min.js"></script>
+	<script src="static/js/breakpoints.min.js"></script>
+	<script src="static/js/util.js"></script>
+	<script src="static/js/main.js"></script>
+	<script src="static/js/hugs.js"></script>
+
+</body>
+
+</html>
